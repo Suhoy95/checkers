@@ -5,32 +5,32 @@ import sys
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
                              os.path.pardir))
 
-from checkers.field import Field, Check, Colors
+from checkers import field
 
 class FieldTest(unittest.TestCase):
     def test__init__field(self):
-        f = Field()
-        self.assertEqual(f.get_check((1, 2)), Check(Colors.BLACK))
-        self.assertEqual(f.get_check((2, 7)), Check(Colors.WHITE))
+        f = field.Field()
+        self.assertEqual(f.get_check((1, 2)), field.black_check)
+        self.assertEqual(f.get_check((2, 7)), field.white_check)
 
     def test_get_checks_of_this_color(self):
-        f = Field()
+        f = field.Field()
 
-        for i in f.get_checks_of_this_color(Colors.WHITE):
-            self.assertEqual(i, Check(Colors.WHITE))
-        for i in f.get_checks_of_this_color(Colors.BLACK):
-            self.assertEqual(i, Check(Colors.BLACK))
+        for i in f.get_checks_of_this_color(field.Colors.WHITE):
+            self.assertEqual(i, field.white_check)
+        for i in f.get_checks_of_this_color(field.Colors.BLACK):
+            self.assertEqual(i, field.black_check)
 
     def test_move_check(self):
-        f = Field()
+        f = field.Field()
 
         f.move_check((1, 4), (2, 5))
-        self.assertEqual(f.get_check((2, 5)), Check(Colors.BLACK))
+        self.assertEqual(f.get_check((2, 5)), field.black_check)
         with self.assertRaises(ValueError):
             f.get_check((1, 4))
 
     def test_move_check_bad(self):
-        f = Field()
+        f = field.Field()
 
         with self.assertRaises(ValueError):
             f.move_check((1, 1), (5, 5))

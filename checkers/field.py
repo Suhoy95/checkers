@@ -1,21 +1,16 @@
 import enum
+from collections import namedtuple
 
 class Colors(enum.Enum):
     WHITE = 1
     BLACK = 2
 
-class Check():
-    """Класс шашки"""
-    def __init__(self, color=Colors.WHITE, is_queen=False):
-        self.color = color
-        self.is_queen = is_queen
+Check = namedtuple('Check', ['color', 'is_queen'])
+white_check = Check(Colors.WHITE, False)
+black_check = Check(Colors.BLACK, False)
+white_queen = Check(Colors.WHITE, True)
+black_queen = Check(Colors.BLACK, True)
 
-    def __eq__(self, other):
-        """Проверка равенства шашек"""
-        if not isinstance(other, Check):
-            return False
-
-        return (self.color, self.is_queen) == (other.color, other.is_queen)
 
 class Field():
     """Шашечное поле"""
@@ -29,11 +24,11 @@ class Field():
         """Генерация стартовой позиции"""
         for i in range(1, 5):
             for j in range(1 + (i & 1), 11, 2):
-                self._checks[(j, i)] = Check(top_color)
+                self._checks[(j, i)] = black_check
 
         for i in range(7, 11):
             for j in range(1 + (i & 1), 11, 2):                
-                self._checks[(j, i)] = Check(bottom_color)
+                self._checks[(j, i)] = white_check
 
     def get_check(self, coords):
         """Возвращает шашку, которая стоит на соответствующей координатам клетке поля"""
