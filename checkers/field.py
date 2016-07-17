@@ -47,7 +47,7 @@ class Field():
         if color != Colors.BLACK and color != Colors.WHITE:
             raise ValueError(color)
 
-        return filter(lambda c: c.color == color, self._checks.items())
+        return filter(lambda c: c.color == color, self._checks.values())
 
     def move_check(self, old_coords, new_coords):
         """Передвигает шашку с координатами old_coords в клетку поля, соответствующую координатам new_coords"""

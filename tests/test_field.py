@@ -16,12 +16,10 @@ class FieldTest(unittest.TestCase):
     def test_get_checks_of_this_color(self):
         f = Field()
 
-        with self.assertRaises(ValueError):
-            f.move_check((1, 1), (5, 5))
-        with self.assertRaises(ValueError):
-            f.move_check((1, 1), (4, 4, 4))
-        with self.assertRaises(ValueError):
-            f.move_check((1, 2), (2, 3))
+        for i in f.get_checks_of_this_color(Colors.WHITE):
+            self.assertEqual(i, Check(Colors.WHITE))
+        for i in f.get_checks_of_this_color(Colors.BLACK):
+            self.assertEqual(i, Check(Colors.BLACK))
 
     def test_move_check(self):
         f = Field()
@@ -33,6 +31,13 @@ class FieldTest(unittest.TestCase):
 
     def test_move_check_bad(self):
         f = Field()
+
+        with self.assertRaises(ValueError):
+            f.move_check((1, 1), (5, 5))
+        with self.assertRaises(ValueError):
+            f.move_check((1, 1), (4, 4, 4))
+        with self.assertRaises(ValueError):
+            f.move_check((1, 2), (2, 3))
 
 if __name__ == '__main__':
     unittest.main()
