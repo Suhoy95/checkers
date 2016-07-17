@@ -16,6 +16,13 @@ class FieldTest(unittest.TestCase):
     def test_get_checks_of_this_color(self):
         f = Field()
 
+        with self.assertRaises(ValueError):
+            f.move_check((1, 1), (5, 5))
+        with self.assertRaises(ValueError):
+            f.move_check((1, 1), (4, 4, 4))
+        with self.assertRaises(ValueError):
+            f.move_check((1, 2), (2, 3))
+
     def test_move_check(self):
         f = Field()
 
