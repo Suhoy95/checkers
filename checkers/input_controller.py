@@ -35,6 +35,6 @@ def read_cell(field, steps):
     cell = None
     #some stuff
     cells_for_steps = map(lambda s: s.end_cell, steps)
-    if cell not in list(cells_for_steps):
+    if cell not in set(cells_for_steps):
         return -1
     return cell

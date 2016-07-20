@@ -22,10 +22,10 @@ class Field():
     def __init__(self):
         """Создание поля со стартовой позицией"""
         self._checks = dict()
-        self._lighting_cells = dict()
         self._generate_start_pos()
 
-    def _check_coords(self, coords):
+    @staticmethod
+    def check_coords(coords):
         """Проверка координат на принадлежность полю"""
         if len(coords) != 2:
             return False
@@ -44,7 +44,7 @@ class Field():
 
     def get_check(self, coords):
         """Возвращает шашку, которая стоит на соответствующей координатам клетке поля, -1, если шашки нет"""
-        if not self._check_coords(coords):
+        if not Field.check_coords(coords):
             raise ValueError('coords')
 
         if coords not in self._checks:
@@ -71,6 +71,20 @@ class Field():
         del self._checks[old_coords]
         self._checks[new_coords]= check
 
+    def update_check(self, coords):
+        """Меняет статус шашки"""
+        if not Field.check_coords(coords) or coords not in self._checks:
+            raise ValueError('coords')
+
+        if not self._checks[coords].is_queen:
+            self._checks[coords] = (
+                white_queen if self._checks[coords] == white_check
+                else black_queen)
+        elif self._checks[coords].is_queen:
+            self._checks[coords] = (
+                white_check if self._checks[coords] == white_queen
+                else black_check)
+
     def del_check(self, coords):
         """Удаляет шашку, которая стоит на соответствующей координатам клетке поля"""
         if coords not in self._checks:
@@ -87,24 +101,6 @@ class Field():
             raise TypeError('check')
 
         self._checks[coords] = check
-
-    def highlight_cell(self, coords):
-        """Подсвечивает клетку поля, соответствующую координатам"""
-        if not self._check_coords(coords):
-            raise ValueError('coords')
-
-        self._lighting_cells[coords] = True
-
-    def is_lighting(self, coords):
-        """Проверяет, подсвечена ли клетка, соответствующая координатам"""
-        return coords in self._lighting_cells
-
-    def unhighlight_cell(self, coords):
-        """Убирает Подсветку с клетки поля, соответствующую координатам"""
-        if coords not in self._lighting_cells:
-            raise ValueError('coords')
-
-        del self._lighting_cells[coords]
 
     def __str__(self):
         pass
