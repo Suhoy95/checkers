@@ -11,7 +11,12 @@ class StepTest(unittest.TestCase):
     def test_eq(self):
         steps = [
             ((2, 2), (1, 1)),
-            ((1, 1), (2, 2), [((3, 3), field.white_check)])
+            ((1, 1), (2, 2), [((3, 3), field.white_check)]),
+            ((2, 2), (1, 1), [((3, 3), field.white_check)]),
+            ((1, 1), (2, 2), [], True),
+            ((2, 2), (1, 1), [], True),
+            ((1, 1), (2, 2), [((3, 3), field.white_check)], True),
+            ((2, 2), (1, 1), [((3, 3), field.white_check)], True),
         ]
         s = hacks_steps.Step((1, 1), (2, 2))
         for i in steps:
