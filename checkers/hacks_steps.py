@@ -58,30 +58,30 @@ class Step():
             self.is_become_queen == other.is_become_queen)
 
 
+class Node():
+    """Класс, описывающий вершину дерева рубок"""
+    def __init__(self, coords):
+        self.coords = coords
+        self.childs = []
+        self.parrent = None
+
+    def add_child(self, num):
+        """Добавляет ребенка"""
+        self.childs.append(num)
+
+    def add_parrent(self, num):
+        """Добавляет родителя"""
+        self.parrent = num
+
+
 class HacksTree():
     """Класс, описывающий дерево рубок"""
-    class _Node():
-        """Класс, описывающий вершину дерева рубок"""
-        def __init__(self, coords):
-            self.coords = coords
-            self.childs = []
-            self.parrent = None
-
-        def add_child(self, num):
-            """Добавляет ребенка"""
-            self.childs.append(num)
-
-        def add_parrent(self, num):
-            """Добавляет родителя"""
-            self.parrent = num
-
-
     def __init__(self):
         self._nodes = []
 
     def add(self, coords):
         """Добавляет новую вершину, присваивает ей уникальный номер и возвращает его"""
-        self._nodes.append(HacksTree._Node(coords))
+        self._nodes.append(Node(coords))
         return len(self._nodes) - 1
 
     def get(self, num):
