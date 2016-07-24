@@ -29,5 +29,17 @@ class StepTest(unittest.TestCase):
         self.assertEqual(f.get_check((1, 4)), -1)
         self.assertEqual(f.get_check((2, 5)), field.black_check)
 
+
+class NodeTest(unittest.TestCase):
+    pass
+
+
+class HacksTreeTest(unittest.TestCase):
+    def add_test(self):
+        t = hacks_steps.HacksTree()
+        num = t.add((1, 2))
+        self.assertEqual(num1, 1)
+        self.assertListEqual(t._nodes, [(1, 2)])
+
 if __name__ == '__main__':
     unittest.main()

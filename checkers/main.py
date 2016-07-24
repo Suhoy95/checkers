@@ -2,7 +2,7 @@ import field
 
 
 class Player():
-    """Игрок"""
+    """Класс, описывающий игрока"""
     def __init__(self, place, color, is_computer=False):
         self.place = place
         self.color = color
@@ -10,7 +10,7 @@ class Player():
 
 
 class GameState():
-    """Игровое состояние"""
+    """Класс, описывающий игровое состояние"""
     def __init__(self, first_player, second_player):
         self.field = field.Field()
         self.first_player = first_player
@@ -23,11 +23,11 @@ class GameState():
         pass
 
     def pop_step(self):
-        """Удаляет последний совершенный ход из стека"""
+        """Удаляет последний совершенный ход из стека и отменяет его"""
         pass
 
     def change_player(self):
-        """Смена игрока"""
+        """Меняет текущего игрока"""
         pass
 
     def is_gameover(self):

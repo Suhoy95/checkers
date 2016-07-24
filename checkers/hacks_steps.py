@@ -26,7 +26,7 @@ class Step():
     def do(self, chess_field):
         """Исполняет ход над полем"""
         if not isinstance(chess_field, field.Field):
-            raise TypeError('field')
+            raise TypeError('chess_field')
 
         chess_field.move_check(self.start_coor, self.end_coor)
         if self.is_become_queen:
@@ -34,16 +34,16 @@ class Step():
         for c in map(lambda a: a[0], self.hacked_checks):
             chess_field.del_check(c)
 
-    def undo(self, field):
+    def undo(self, chess_field):
         """Отменяет ход над полем"""
-        if not isinstance(field, field.Field):
-            raise TypeError('field')
+        if not isinstance(chess_field, field.Field):
+            raise TypeError('chess_field')
 
-        field.move_check(end_coor, start_coor)
+        chess_field.move_check(end_coor, start_coor)
         if self.is_become_queen:
-            field.update_check(start_coor)
+            chess_field.update_check(start_coor)
         for c in self.hacked_checks:
-            field.add_check(*c)
+            chess_field.add_check(*c)
 
     def __eq__(self, other):
         """Сравнивает два хода"""
@@ -58,29 +58,30 @@ class Step():
             self.is_become_queen == other.is_become_queen)
 
 
-class Node():
-    """Вершина дерева рубок"""
-    def __init__(self, coords):
-        self.coords = coords
-        self.childs = []
-        self.parrent = None
-
-    def add_child(self, num):
-        """Добавляет ребенка"""
-        self.childs.append(num)
-
-    def add_parrent(self, num):
-        """Добавляет родителя"""
-        self.parrent = num
-
 class HacksTree():
-    """Дерево рубок"""
+    """Класс, описывающий дерево рубок"""
+    class _Node():
+        """Класс, описывающий вершину дерева рубок"""
+        def __init__(self, coords):
+            self.coords = coords
+            self.childs = []
+            self.parrent = None
+
+        def add_child(self, num):
+            """Добавляет ребенка"""
+            self.childs.append(num)
+
+        def add_parrent(self, num):
+            """Добавляет родителя"""
+            self.parrent = num
+
+
     def __init__(self):
         self._nodes = []
 
     def add(self, coords):
         """Добавляет новую вершину, присваивает ей уникальный номер и возвращает его"""
-        self._nodes.append(Node(coords))
+        self._nodes.append(HacksTree._Node(coords))
         return len(self._nodes) - 1
 
     def get(self, num):
@@ -106,7 +107,7 @@ class HacksTree():
         return filter(lambda n: len(n.childs) == 0, self._nodes)
 
     def _get_depth_of_brench(self, node):
-        """Возвращает глубину ветки"""
+        """Возвращает глубину ветки, концом которой является node"""
         depth = 0
         while node is not None:
             node = node.parrent
@@ -114,8 +115,8 @@ class HacksTree():
 
         return depth
 
-    def get_longest_brenches(self):
-        """Возвращает самые длинные ветки"""
+    def _get_longest_brenches(self):
+        """Возвращает концы самых длинных веток"""
         brenches = ((i, self._get_depth_of_brench(i)) for i in self._get_ends_of_brenches())
         max_depth = max(brenches, key=lambda b: b[1])
 
@@ -123,8 +124,15 @@ class HacksTree():
             if b[1] == max_depth:
                 yield b[0]
 
+    def generate_steps(self, field, place_for_becoming_queen):
+        """Генерирует экземпляры класса Step на основе построенного дерева"""
+        pass
+
     def is_hacked_in_branch(self, num, coords):
-        """Проверяет, была ли срублена шашка с координатами coords в ветке"""
+        """
+            Проверяет, была ли срублена шашка с координатами coords в ветке,
+            концом которой является вершина с номером num
+        """
         node = self._nodes[num]
         while node.parrent is not None:
             x = abs(node.coords[0] - node.parrent.coords[0])
@@ -136,5 +144,5 @@ class HacksTree():
         return False
 
 def get_steps(check, coords):
-    """Возвращает все возможные ходы шашки из заданной позиции"""
+    """Возвращает все возможные ходы шашки из заданных координат"""
     pass

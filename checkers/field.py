@@ -18,22 +18,22 @@ black_queen = Check(Colors.BLACK, True)
 
 
 class Field():
-    """Шашечное поле"""
+    """Класс, описывающий шашечное поле"""
     def __init__(self):
-        """Создание поля со стартовой позицией"""
+        """Создает поле со стартовой позицией"""
         self._checks = dict()
         self._generate_start_pos()
 
     @staticmethod
     def check_coords(coords):
-        """Проверка координат на принадлежность полю"""
+        """Проверяет координаты на принадлежность полю"""
         if len(coords) != 2:
             return False
 
         return all(map(lambda c: c > 0 and c < 11, coords))
 
     def _generate_start_pos(self, bottom_color=Colors.WHITE, top_color=Colors.BLACK):
-        """Генерация стартовой позиции"""
+        """Генерирует стартовую позицию"""
         for i in range(1, 5):
             for j in range(1 + (i & 1), 11, 2):
                 self._checks[(j, i)] = black_check
@@ -72,7 +72,7 @@ class Field():
         self._checks[new_coords]= check
 
     def update_check(self, coords):
-        """Меняет статус шашки"""
+        """Меняет статус шашки с дамки на обычную и обратно"""
         if not Field.check_coords(coords) or coords not in self._checks:
             raise ValueError('coords')
 
