@@ -118,5 +118,6 @@ class FieldTest(unittest.TestCase):
         with self.assertRaises(TypeError):
             f.add_check((5, 5), [])
 
+
 if __name__ == '__main__':
     unittest.main()

@@ -73,6 +73,15 @@ class Node():
         """Добавляет родителя"""
         self.parrent = num
 
+    def __eq__(self, other):
+        if not isinstance(other, Node):
+            raise TypeError('other')
+
+        return (
+            self.coords == other.coords and
+            len(self.childs) == len(other.childs) and
+            self.parrent == other.parrent)
+
 
 class HacksTree():
     """Класс, описывающий дерево рубок"""
@@ -126,7 +135,17 @@ class HacksTree():
 
     def generate_steps(self, field, place_for_becoming_queen):
         """Генерирует экземпляры класса Step на основе построенного дерева"""
-        pass
+        for b in self._get_longest_brenches():
+            is_become_queen = b.coords == place_for_becoming_queen
+            end_coords = b.coords
+            hacked_checks = []
+            while b.parrent is not None:
+                x = abs(b.coords[0] - b.parrent.coords[0])
+                y = abs(b.coords[1] - b.parrent.coords[1])
+                hacked_checks.append((x, y), field.get_check((x, y)))
+                b = b.parrent
+            s = Step(b.coords, end_coords, hacked_checks, is_become_queen)
+            yield s
 
     def is_hacked_in_branch(self, num, coords):
         """

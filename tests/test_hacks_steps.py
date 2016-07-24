@@ -7,6 +7,7 @@ sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)),
 
 from checkers import hacks_steps, field
 
+
 class StepTest(unittest.TestCase):
     def test_eq(self):
         steps = [
@@ -29,13 +30,27 @@ class StepTest(unittest.TestCase):
         self.assertEqual(f.get_check((1, 4)), -1)
         self.assertEqual(f.get_check((2, 5)), field.black_check)
 
+        t = hacks_steps.HacksTree()
+        num = t.add((1, 2))
+        self.assertEqual(num, 0)
+        self.assertListEqual(t._nodes, [hacks_steps.Node((1, 2))])
+
+    def some_test(self):
+        pass
+
 
 class HacksTreeTest(unittest.TestCase):
     def add_test(self):
         t = hacks_steps.HacksTree()
         num = t.add((1, 2))
         self.assertEqual(num1, 0)
-        self.assertListEqual(t._nodes, [(1, 2)])
+        self.assertListEqual(t._nodes, [Node((1, 2))])
+
+    def get_test(self):
+        t = hacks_steps.HacksTree()
+        t.add((1, 2))
+        node = t.get(0)
+        self.assertEqual()
 
 
 if __name__ == '__main__':
