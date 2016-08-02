@@ -28,6 +28,8 @@ class Step():
         if not isinstance(other, Step):
             raise TypeError('other')
 
+        # Внимание, OverOptimization!
+        # стоит начинать с самых легких проверок, преобразование в set - относительно дорогая операция
         return (
             set(self.hacked_checks) == set(other.hacked_checks) and
             self.start_coor == other.start_coor and
@@ -42,10 +44,13 @@ class Node():
         self.childs = []
         self.parrent = None
 
+    # почему num? Это число? или все-таки узел?(node)
     def add_child(self, num):
         """Добавляет ребенка"""
         self.childs.append(num)
 
+    # родитель - один, его нельзя добавить
+    # его можно установить - set
     def add_parrent(self, num):
         """Добавляет родителя"""
         self.parrent = num
@@ -53,13 +58,14 @@ class Node():
     def __eq__(self, other):
         if not isinstance(other, Node):
             raise TypeError('other')
-
+        # порядок, см. выше.
         return (
             self.coords == other.coords and
             set(self.childs) == set(other.childs) and
             self.parrent == other.parrent)
 
 
+# может get_meddle_coord?
 def get_coords_of_check(start_coords, end_coords):
     """Возвращает координаты шашки, которая была срублена ходом из start_coords в end_coords"""
     x = (start_coords[0] + end_coords[0]) / 2
@@ -67,7 +73,8 @@ def get_coords_of_check(start_coords, end_coords):
 
     return (x, y)
 
-
+# Тадам! теперь понятно, почему num,
+# Оказывается ДЕРЕВО рубок - СПИСОК (возможно стоит убрать ассоциации со структурами данных, просто Hacks)
 class HacksTree():
     """Класс, описывающий дерево рубок"""
     def __init__(self):
@@ -85,6 +92,7 @@ class HacksTree():
 
         return self._nodes[num]
 
+    # incident? bind, connect, combine...
     def incident(self, num1, num2):
         """Создает ребро из вершины с номером num1 в вершину с номером num2"""
         if num1 < 0 or num1 >= len(self._nodes):
@@ -104,8 +112,8 @@ class HacksTree():
         """Возвращает глубину ветки, концом которой является node"""
         depth = 0
         while node is not None:
-            node = node.parrent
-            depth += 1
+            node = node.parrent # по логике Node & INCIDENT -> parrent - это число
+            depth += 1          # похоже на баг
 
         return depth
 
@@ -118,6 +126,7 @@ class HacksTree():
             if b[1] == max_depth:
                 yield b[0]
 
+    # chess_field -> field
     def generate_steps(self, chess_field, place_for_becoming_queen):
         """Генерирует экземпляры класса Step на основе построенного дерева"""
         if not isinstance(chess_field, field.Field):
@@ -125,7 +134,10 @@ class HacksTree():
 
         steps = []
 
+        # В принципе ок, но создание хода можно вынести
+        # steps.append(create_step(b))
         for b in self._get_longest_brenches():
+            # а разве место, что бы стать королевой одно? Напрашивается in
             is_become_queen = b.coords == place_for_becoming_queen
             end_coords = b.coords
             hacked_checks = []
@@ -143,6 +155,7 @@ class HacksTree():
             Проверяет, была ли срублена шашка с координатами coords в ветке,
             концом которой является вершина с номером num
         """
+        # хаха, тут с проверками перестал заморачиваться? ;)
         node = self._nodes[num]
         while node.parrent is not None:
             hacked_check_coords = get_coords_of_check(node.coords, node.parrent.coords)
@@ -152,6 +165,8 @@ class HacksTree():
 
         return False
 
+# мясо, даже читать не хочется
+# не слишком ли много для 4-ех проверок?
 def _get_cur_hacks(chess_field, check, coords):
     """Возвращает все рубки глубины один из заданных координат"""
     if not isinstance(check, field.Check):
@@ -197,6 +212,8 @@ def _get_cur_hacks(chess_field, check, coords):
             except ValueError:
                 pass
 
+# почему бы HacksTree срезу не генерироваться от конкретной ветки?
+# возможно лучше static-фабрика
 def _get_hacks(chess_field, coords, place_for_becoming_queen):
     """Возвращает все рубки максимальной глубины из заданных координат"""
     if not isinstance(chess_field, field.Field):
@@ -209,6 +226,7 @@ def _get_hacks(chess_field, coords, place_for_becoming_queen):
     num_of_cur_hack = t.add(coords)
     hacks.append(num_of_cur_hack)
 
+    # ебать, dfs без рекурсии. А он того стоит? рекруcивный выглядит гораздо проще.
     #DFS
     while len(hacks) > 0:
         num_of_cur_hack = hacks.pop()
@@ -221,7 +239,7 @@ def _get_hacks(chess_field, coords, place_for_becoming_queen):
                 num_of_incident_hack = t.add(i)
                 t.incident(num_of_cur_hack, num_of_incident_hack)
                 hacks.append(num_of_incident_hack)
-
+# в связи с этим всем, Node & HacksTree стали просто вспомогательными структурами для этой функции
     return t.generate_steps(chess_field, place_for_becoming_queen)
 
 def get_steps(chess_field, check, coords, place_for_becoming_queen):

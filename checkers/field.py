@@ -10,7 +10,11 @@ class Colors(enum.Enum):
     WHITE = 1
     BLACK = 2
 
-
+# 1) это обьекты-константы, сообще говоря они должны выделяться среди переменных
+# Внимание, Overengineering!
+# эти обьекты можно завернуть в enum, как набор доступных фишек
+# плюсом к этому enum-у, если возможно, круто бы придумать Immutable-методы, касающиеся шашек
+# (см. мясо внизу)
 Check = namedtuple('Check', ['color', 'is_queen'])
 white_check = Check(Colors.WHITE, False)
 black_check = Check(Colors.BLACK, False)
@@ -27,13 +31,18 @@ class Field():
         if not empty:
             self._checks = Field.generate_start_pos(bottom_check, top_check)
 
+    # вспомогательный метод, относительно логики поля
+    # лучше его описать после основного интерфейса
     @staticmethod
     def check_coords(coords):
         """Проверка координат на принадлежность полю"""
         if len(coords) != 2:
             return False
 
-        return all(map(lambda c: c > 0 and c < 11, coords))
+        return all(map(lambda c: c > 0 and c < 11, coords)) # размер поля можно задать, см. ниже
+
+        # почем не так?
+        return len(coords) == 2 && all(map(lambda c: c > 0 and c < 11, coords))
 
     @staticmethod
     def generate_start_pos(bottom_check, top_check):
@@ -46,6 +55,9 @@ class Field():
 
         checks = OrderedDict()
 
+        # окей, я догодался, что шашки 11 клеточные, 
+        # но вообще размер поля можно задать в виде свойства, либо константы
+        # и часть переменных будет высчитываться от нее
         for i in range(1, 5):
             for j in range(1 + (i & 1), 11, 2):
                 checks[(j, i)] = top_check
@@ -62,12 +74,15 @@ class Field():
             raise ValueError('coords')
 
         if coords not in self._checks:
-            return -1
+            return -1 # я конечно все понимаю, но -1 не шашка, какой-нибудь null был бы лучше
+                      # либо какая ниубдь emptyCell
 
         return self._checks[coords]
 
     def get_checks_of_this_color(self, color):
         """Возвращает все шашки заданного цвета"""
+        # Вообще должно решаться с помощью одного оператора
+        # in | instance - что-то в этом духе
         if color != Colors.BLACK and color != Colors.WHITE:
             raise ValueError('color')
 
@@ -82,6 +97,9 @@ class Field():
         if new_coords in self._checks:
             raise ValueError('new_coords')
 
+        # почему бы нет ?
+        # self._checks[new_coords] = self._checks[old_coords] 
+        # del self._checks[old_coords]
         check = self._checks[old_coords]
         del self._checks[old_coords]
         self._checks[new_coords]= check
@@ -91,6 +109,7 @@ class Field():
         if coords not in self._checks:
             raise ValueError('coords')
 
+        # МЯСО, сложна и некрасиво, для такой простой вещи
         if not self._checks[coords].is_queen:
             self._checks[coords] = (
                 white_queen if self._checks[coords] == white_check
@@ -119,6 +138,8 @@ class Field():
 
         self._checks[coords] = check
 
+    # Основные внешние методы для поля, 
+    # должны быть в самых верхних строчках
     def do_step(self, step):
         """Исполняет ход над полем"""
         if not isinstance(step, hacks_steps.Step):
@@ -146,9 +167,11 @@ class Field():
         if not isinstance(other, Field):
             raise TypeError('other')
 
+        # уже тут можно написать return без if.
         if len(self._checks) != len(other._checks):
             return False
 
+        # можно в одну строчку с двойным all
         for key, value in self._checks.items():
             if key not in other._checks.keys():
                 return False
